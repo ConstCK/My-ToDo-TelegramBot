@@ -1,5 +1,10 @@
 import datetime
 
+from aiogram.enums import ParseMode
+from aiogram.utils.formatting import Text
+
+from database.models import Task
+
 
 # Проверка введенной задачи на корректность
 def validate_task(data: str) -> tuple[str, str] | None:
@@ -25,3 +30,13 @@ def get_time_period(category_name: str) -> datetime.timedelta | None:
         time_period = None
 
     return time_period
+
+
+def get_status_mark(status: str) -> str:
+    if status == 'Выполнено':
+        status_mark = "✅"
+    elif status == 'Снято':
+        status_mark = "❌"
+    else:
+        status_mark = "⏳️"
+    return status_mark

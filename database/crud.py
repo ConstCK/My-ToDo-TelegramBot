@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete, and_
 from sqlalchemy.orm import joinedload
 
 from database.config import async_session
@@ -53,6 +53,26 @@ async def get_all_tasks(category_name: str) -> list[Task]:
         return result.all()
 
 
+# Получение списка всех выполняемых задач в указанной категории
+async def get_all_current_tasks(category_name: str) -> list[Task]:
+    async with async_session() as session:
+        if category_name == 'Все':
+            result = await session.scalars(select(Task)
+                                           .where(Task.status == 'Выполняется')
+                                           .order_by(Task.expire_at)
+                                           .options(joinedload(Task.category))
+                                           )
+        else:
+            category_id = await get_category_id(category_name)
+            result = await session.scalars(select(Task)
+                                           .where(and_(Task.category_id == category_id,
+                                                       Task.status == 'Выполняется'))
+                                           .order_by(Task.expire_at)
+                                           .options(joinedload(Task.category))
+                                           )
+        return result.all()
+
+
 # Добавление задачи в БД
 async def add_task(user_id: int, category_name: str, name: str, description: str) -> Task:
     category_id = await get_category_id(category_name)
@@ -80,9 +100,20 @@ async def change_status(task_id: str, mode: str) -> bool:
         return False
     async with async_session() as session:
         try:
-            await session.execute(update(Task).where(Task.id == task_id).values(status=task_status))
+            await session.execute(update(Task)
+                                  .where(Task.id == task_id)
+                                  .values(status=task_status))
             await session.commit()
             return True
         except Exception as err:
             print(f'error {err}')
             await session.rollback()
+
+
+# Удаление указанных задач
+async def delete_tasks() -> None:
+    async with async_session() as session:
+        result = await session.execute(delete(Task)
+                                       .where(Task.status == 'Снято'))
+        print('result------', result)
+        await session.commit()
