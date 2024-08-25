@@ -30,6 +30,6 @@ async def tasks_keyboard(category):
     builder = InlineKeyboardBuilder()
     tasks = await get_all_tasks(category)
     for task in tasks:
-        builder.add(InlineKeyboardButton(text=f'№{task.id} - {task.name} - {task.description}',
+        builder.add(InlineKeyboardButton(text=f'Задача: {task.name}, \n Описание: {task.description}.',
                                          callback_data=f'task_{task.id}'))
     return builder.adjust(1).as_markup()

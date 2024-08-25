@@ -13,8 +13,9 @@ router = Router()
 
 
 # Обработка очереди сообщений (ввод задачи)
-@router.callback_query(F.data.startswith('add'), StateFilter(None))
+@router.callback_query(F.data.startswith('add'))
 async def select_task_category(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
     await callback.message.answer(
         text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b> для добавления задачи\n'
              f'Введите задачу и описание через знак "-"', parse_mode=ParseMode.HTML
@@ -44,8 +45,9 @@ async def create_task(message: Message, state: FSMContext):
 
 
 # Обработка запроса на завершение задач
-@router.callback_query(F.data.startswith('complete'), StateFilter(None))
+@router.callback_query(F.data.startswith('complete'))
 async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
     await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
                                        f'Выберите задачу для завершения...',
                                   reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
@@ -56,8 +58,9 @@ async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
 
 
 # Обработка запроса на отмену задач
-@router.callback_query(F.data.startswith('cancel'), StateFilter(None))
+@router.callback_query(F.data.startswith('cancel'))
 async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
     await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
                                        f'Выберите задачу для отмены...',
                                   reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
