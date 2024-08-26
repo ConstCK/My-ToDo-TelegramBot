@@ -1,6 +1,6 @@
 # Для локального запуска бота:
 
-* Скопируйте проект к себе на ПК при помощи: git clone **_Path_**
+* Скопируйте проект к себе на ПК при помощи: git clone https://github.com/ConstCK/My-ToDo-TelegramBot.git
 * Перейдите в папку проекта.
 * В терминале создайте виртуальное окружение (например python -m venv venv) и активируйте его (venv\scripts\activate).
 * Установите все зависимости при помощи pip install -r requirements.txt.
