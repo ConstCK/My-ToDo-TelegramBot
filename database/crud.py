@@ -47,11 +47,12 @@ async def get_all_tasks(tg_id: int, category_name: str) -> list[Task]:
 
 
 # Получение списка всех выполняемых задач в указанной категории
-async def get_all_current_tasks(category_name: str) -> list[Task]:
+async def get_all_current_tasks(tg_id: int, category_name: str) -> list[Task]:
     async with async_session() as session:
         if category_name == 'Все':
             result = await session.scalars(select(Task)
-                                           .where(Task.status == 'Выполняется')
+                                           .where(and_(Task.status == 'Выполняется',
+                                                       Task.user_id == tg_id))
                                            .order_by(Task.expire_at)
                                            .options(joinedload(Task.category))
                                            )
@@ -59,7 +60,8 @@ async def get_all_current_tasks(category_name: str) -> list[Task]:
             category_id = await get_category_id(category_name)
             result = await session.scalars(select(Task)
                                            .where(and_(Task.category_id == category_id,
-                                                       Task.status == 'Выполняется'))
+                                                       Task.status == 'Выполняется',
+                                                       Task.user_id == tg_id))
                                            .order_by(Task.expire_at)
                                            .options(joinedload(Task.category))
                                            )

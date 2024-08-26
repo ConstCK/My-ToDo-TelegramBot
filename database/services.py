@@ -39,8 +39,11 @@ async def get_category_id(category_name: str):
 async def get_tasks_number(category_name: str, tg_id: int) -> int:
     category_id = await get_category_id(category_name)
     async with async_session() as session:
-        result = await session.execute(
-            select(count(Task.id)).select_from(Task).where(and_(Task.category_id == category_id,
-                                                                Task.user_id == tg_id)))
-
+        if category_name == 'Все':
+            result = await session.execute(
+                select(count(Task.id)).select_from(Task).where(Task.user_id == tg_id))
+        else:
+            result = await session.execute(
+                select(count(Task.id)).select_from(Task).where(and_(Task.category_id == category_id,
+                                                                    Task.user_id == tg_id)))
         return result.scalar()

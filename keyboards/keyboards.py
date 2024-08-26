@@ -14,7 +14,7 @@ async def base_keyboard():
 
 
 # Создание клавиатуры для использования в ответах на получение категорий
-async def category_keyboard(mode):
+async def category_keyboard(mode: str):
     builder = InlineKeyboardBuilder()
     categories = await get_all_categories()
     for category in categories:
@@ -25,9 +25,9 @@ async def category_keyboard(mode):
 
 
 # Создание клавиатуры для вывода заданий в виде ин-лайн-кнопок
-async def tasks_keyboard(category):
+async def tasks_keyboard(tg_id: int, category: str):
     builder = InlineKeyboardBuilder()
-    tasks = await get_all_current_tasks(category)
+    tasks = await get_all_current_tasks(tg_id, category)
     for task in tasks:
         builder.add(InlineKeyboardButton(text=f'Задача: {task.name}. Описание: {task.description}.',
                                          callback_data=f'task_{task.id}'))

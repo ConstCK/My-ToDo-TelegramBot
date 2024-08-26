@@ -63,7 +63,8 @@ async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
     if task_number:
         await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
                                            f'Выберите задачу для завершения...',
-                                      reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
+                                      reply_markup=await tasks_keyboard(callback.from_user.id,
+                                                                        callback.data.split('_')[1]),
                                       parse_mode=ParseMode.HTML)
         await callback.answer(text='Выполнение запроса...')
         await state.update_data(mode='complete')
@@ -82,7 +83,8 @@ async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
     if task_number:
         await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
                                            f'Выберите задачу для отмены...',
-                                      reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
+                                      reply_markup=await tasks_keyboard(callback.from_user.id,
+                                                                        callback.data.split('_')[1]),
                                       parse_mode=ParseMode.HTML)
         await callback.answer(text='Выполнение запроса...')
         await state.update_data(mode='cancel')
