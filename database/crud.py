@@ -1,10 +1,11 @@
 import datetime
 
-from sqlalchemy import select, update, delete, and_
+from sqlalchemy import select, update, delete, and_, or_
 from sqlalchemy.orm import joinedload
 
 from database.config import async_session
 from database.models import Category, Task, User
+from database.services import get_category_id
 from utils.utils import get_time_period
 
 
@@ -19,14 +20,6 @@ async def set_user(tg_id: int) -> None:
             await session.commit()
 
 
-# Получение id категории по ее названию
-async def get_category_id(category_name: str):
-    async with async_session() as session:
-        result = await session.scalar(select(Category).where(Category.name == category_name))
-        print(result)
-        return result.id
-
-
 # Получение списка всех категорий
 async def get_all_categories() -> list[Category]:
     async with async_session() as session:
@@ -35,17 +28,19 @@ async def get_all_categories() -> list[Category]:
 
 
 # Получение списка всех задач в указанной категории
-async def get_all_tasks(category_name: str) -> list[Task]:
+async def get_all_tasks(tg_id: int, category_name: str) -> list[Task]:
     async with async_session() as session:
         if category_name == 'Все':
             result = await session.scalars(select(Task)
+                                           .where(Task.user_id == tg_id)
                                            .order_by(Task.expire_at)
                                            .options(joinedload(Task.category))
                                            )
         else:
             category_id = await get_category_id(category_name)
             result = await session.scalars(select(Task)
-                                           .where(Task.category_id == category_id)
+                                           .where(and_(Task.category_id == category_id,
+                                                       Task.user_id == tg_id))
                                            .order_by(Task.expire_at)
                                            .options(joinedload(Task.category))
                                            )
@@ -71,6 +66,15 @@ async def get_all_current_tasks(category_name: str) -> list[Task]:
                                            .options(joinedload(Task.category))
                                            )
         return result.all()
+
+
+# Получение задачи по указанному id
+async def get_task(task_id: int) -> Task:
+    async with async_session() as session:
+        result = await session.scalar(select(Task)
+                                      .where(Task.id == task_id)
+                                      )
+    return result
 
 
 # Добавление задачи в БД
@@ -110,10 +114,18 @@ async def change_status(task_id: str, mode: str) -> bool:
             await session.rollback()
 
 
-# Удаление указанных задач
-async def delete_tasks() -> None:
+# Удаление отмененных задач
+async def delete_canceled_tasks() -> None:
     async with async_session() as session:
-        result = await session.execute(delete(Task)
-                                       .where(Task.status == 'Снято'))
-        print('result------', result)
+        await session.execute(delete(Task)
+                              .where(Task.status == 'Снято'))
+        await session.commit()
+
+
+# Удаление отмененных задач
+async def clean_garbage() -> None:
+    async with async_session() as session:
+        await session.execute(delete(Task)
+                              .where(or_(Task.status == 'Снято',
+                                         Task.status == 'Выполнено')))
         await session.commit()

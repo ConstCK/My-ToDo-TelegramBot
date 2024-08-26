@@ -3,7 +3,7 @@ from aiogram.types import Message
 
 
 from keyboards.keyboards import category_keyboard
-from database.crud import delete_tasks
+from database.crud import clean_garbage, delete_canceled_tasks
 
 router = Router()
 
@@ -36,10 +36,17 @@ async def cmd_start(message: Message):
                          reply_markup=await category_keyboard('cancel'))
 
 
-# Обработка сообщений отмены задач
-@router.message(F.text.startswith('Очистить'))
+# Обработка сообщений удаления отмененных задач
+@router.message(F.text.startswith('Удалить'))
 async def cmd_start(message: Message):
     await message.answer(text='Очистка приложения от отмененных задач...')
-    await delete_tasks()
+    await delete_canceled_tasks()
     await message.answer(text='Удаление прошло успешно...')
 
+
+# Обработка сообщений удаления завершенных и отмененных задач
+@router.message(F.text.startswith('Очистить'))
+async def cmd_start(message: Message):
+    await message.answer(text='Очистка приложения от отмененных и выполненных задач...')
+    await clean_garbage()
+    await message.answer(text='Удаление прошло успешно...')

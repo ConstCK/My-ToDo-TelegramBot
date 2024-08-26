@@ -1,11 +1,16 @@
+import datetime
+
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from database.crud import add_task, get_all_tasks, change_status
+
+from database.crud import add_task, change_status
+from scheduler.handlers import task_reminder
 from keyboards.keyboards import base_keyboard, tasks_keyboard
+from scheduler.scheduler import scheduler
 from states.states import TaskStages
 from utils.utils import validate_task
 
@@ -38,6 +43,13 @@ async def create_task(message: Message, state: FSMContext):
 
         await message.answer(text=f'Добавлена задача {task.name} в {task.created_at}',
                              reply_markup=await base_keyboard())
+
+        # args= аргумент передаваемый в функцию-обработчик запланированной задачи func=
+        scheduler.add_job(func=task_reminder,
+                          name='expired_tasks',
+                          trigger='date',
+                          run_date=task.expire_at - datetime.timedelta(minutes=10),
+                          args=(message, task.id))
     else:
         await message.answer(text='Ошибка при вводе задачи',
                              reply_markup=await base_keyboard())

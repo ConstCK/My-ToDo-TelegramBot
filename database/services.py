@@ -1,3 +1,5 @@
+
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from database.config import engine, Base, async_session
@@ -24,3 +26,14 @@ async def add_initial_categories():
             await session.commit()
         except IntegrityError:
             print(f'Categories are already exist...')
+
+
+# Получение id категории по ее названию
+async def get_category_id(category_name: str):
+    async with async_session() as session:
+        result = await session.scalar(select(Category).where(Category.name == category_name))
+        print(result)
+        return result.id
+
+
+

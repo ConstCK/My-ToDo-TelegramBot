@@ -1,10 +1,5 @@
 import datetime
 
-from aiogram.enums import ParseMode
-from aiogram.utils.formatting import Text
-
-from database.models import Task
-
 
 # Проверка введенной задачи на корректность
 def validate_task(data: str) -> tuple[str, str] | None:
@@ -19,7 +14,7 @@ def validate_task(data: str) -> tuple[str, str] | None:
 # Получение даты истечения для задачи
 def get_time_period(category_name: str) -> datetime.timedelta | None:
     if category_name == 'Ежедневные':
-        time_period = datetime.timedelta(days=1)
+        time_period = datetime.timedelta(minutes=12)
     elif category_name == 'На неделю':
         time_period = datetime.timedelta(weeks=1)
     elif category_name == 'На месяц':

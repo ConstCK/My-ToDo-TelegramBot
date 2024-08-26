@@ -1,7 +1,7 @@
 from aiogram.types import KeyboardButton, InlineKeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
-from database.crud import get_all_categories, get_all_tasks
+from database.crud import get_all_categories, get_all_current_tasks
 from utils.constants import ORDERS
 
 
@@ -10,7 +10,6 @@ async def base_keyboard():
     builder = ReplyKeyboardBuilder()
     for order in ORDERS:
         builder.add(KeyboardButton(text=order))
-    builder.add(KeyboardButton(text='Очистить планировщик (удалить отмененные задачи)'))
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
 
@@ -28,7 +27,7 @@ async def category_keyboard(mode):
 # Создание клавиатуры для вывода заданий в виде ин-лайн-кнопок
 async def tasks_keyboard(category):
     builder = InlineKeyboardBuilder()
-    tasks = await get_all_tasks(category)
+    tasks = await get_all_current_tasks(category)
     for task in tasks:
         builder.add(InlineKeyboardButton(text=f'Задача: {task.name}. Описание: {task.description}.',
                                          callback_data=f'task_{task.id}'))
