@@ -6,8 +6,8 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-
 from database.crud import add_task, change_status
+from database.services import get_tasks_number
 from scheduler.handlers import task_reminder
 from keyboards.keyboards import base_keyboard, tasks_keyboard
 from scheduler.scheduler import scheduler
@@ -53,33 +53,44 @@ async def create_task(message: Message, state: FSMContext):
     else:
         await message.answer(text='Ошибка при вводе задачи',
                              reply_markup=await base_keyboard())
-    await state.clear()
 
 
 # Обработка запроса на завершение задач
 @router.callback_query(F.data.startswith('complete'))
 async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
-                                       f'Выберите задачу для завершения...',
-                                  reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
-                                  parse_mode=ParseMode.HTML)
-    await callback.answer(text='Выполнение запроса...')
-    await state.update_data(mode='complete')
-    await state.set_state(TaskStages.complete_task)
+    task_number = await get_tasks_number(callback.data.split('_')[1], callback.from_user.id)
+    if task_number:
+        await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
+                                           f'Выберите задачу для завершения...',
+                                      reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
+                                      parse_mode=ParseMode.HTML)
+        await callback.answer(text='Выполнение запроса...')
+        await state.update_data(mode='complete')
+        await state.set_state(TaskStages.complete_task)
+    else:
+        await callback.message.answer(
+            text=f'В категории <b>{callback.data.split('_')[1]}</b> нет задач для завершения.',
+            parse_mode=ParseMode.HTML)
 
 
 # Обработка запроса на отмену задач
 @router.callback_query(F.data.startswith('cancel'))
 async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
-                                       f'Выберите задачу для отмены...',
-                                  reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
-                                  parse_mode=ParseMode.HTML)
-    await callback.answer(text='Выполнение запроса...')
-    await state.update_data(mode='cancel')
-    await state.set_state(TaskStages.complete_task)
+    task_number = await get_tasks_number(callback.data.split('_')[1], callback.from_user.id)
+    if task_number:
+        await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
+                                           f'Выберите задачу для отмены...',
+                                      reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
+                                      parse_mode=ParseMode.HTML)
+        await callback.answer(text='Выполнение запроса...')
+        await state.update_data(mode='cancel')
+        await state.set_state(TaskStages.complete_task)
+    else:
+        await callback.message.answer(
+            text=f'В категории <b>{callback.data.split('_')[1]}</b> нет задач для отмены.',
+            parse_mode=ParseMode.HTML)
 
 
 # Обработка очереди сообщений (завершение задачи)
@@ -93,16 +104,3 @@ async def create_task(callback: CallbackQuery, state: FSMContext):
     else:
         await callback.message.answer(text='Не удалось завершить задачу.\n'
                                            'Попробуйте еще раз')
-    await state.clear()
-
-
-# Обработка запроса на отмену задач
-@router.callback_query(F.data.startswith('cancel'), StateFilter(None))
-async def select_tasks_for_complete(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(text=f'Выбрана категория <b>{callback.data.split('_')[1]}</b>\n'
-                                       f'Выберите задачу для отмены...',
-                                  reply_markup=await tasks_keyboard(callback.data.split('_')[1]),
-                                  parse_mode=ParseMode.HTML)
-    await callback.answer(text='Выполнение запроса...')
-    await state.update_data(mode='cancel')
-    await state.set_state(TaskStages.complete_task)

@@ -1,9 +1,9 @@
-
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql.functions import count
 
 from database.config import engine, Base, async_session
-from database.models import Category
+from database.models import Category, Task
 
 
 # Создание всех таблиц в БД
@@ -32,8 +32,15 @@ async def add_initial_categories():
 async def get_category_id(category_name: str):
     async with async_session() as session:
         result = await session.scalar(select(Category).where(Category.name == category_name))
-        print(result)
         return result.id
 
 
+# Получение количества выполняемых заданий в указанной категории
+async def get_tasks_number(category_name: str, tg_id: int) -> int:
+    category_id = await get_category_id(category_name)
+    async with async_session() as session:
+        result = await session.execute(
+            select(count(Task.id)).select_from(Task).where(and_(Task.category_id == category_id,
+                                                                Task.user_id == tg_id)))
 
+        return result.scalar()

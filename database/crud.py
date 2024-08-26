@@ -13,7 +13,6 @@ from utils.utils import get_time_period
 async def set_user(tg_id: int) -> None:
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.tg_id == tg_id))
-
         if not user:
             session.add(User(tg_id=tg_id))
             print('User is added to db...')
@@ -44,7 +43,6 @@ async def get_all_tasks(tg_id: int, category_name: str) -> list[Task]:
                                            .order_by(Task.expire_at)
                                            .options(joinedload(Task.category))
                                            )
-
         return result.all()
 
 
@@ -90,7 +88,6 @@ async def add_task(user_id: int, category_name: str, name: str, description: str
     async with async_session() as session:
         session.add(task)
         await session.commit()
-
         return task
 
 
@@ -122,7 +119,7 @@ async def delete_canceled_tasks() -> None:
         await session.commit()
 
 
-# Удаление отмененных задач
+# Удаление неактивных задач
 async def clean_garbage() -> None:
     async with async_session() as session:
         await session.execute(delete(Task)

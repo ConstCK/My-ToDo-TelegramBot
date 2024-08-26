@@ -41,7 +41,7 @@ async def cmd_start(message: Message):
 async def cmd_start(message: Message):
     await message.answer(text='Очистка приложения от отмененных задач...')
     await delete_canceled_tasks()
-    await message.answer(text='Удаление прошло успешно...')
+    await message.answer(text='Очистка прошла успешно...')
 
 
 # Обработка сообщений удаления завершенных и отмененных задач
@@ -49,4 +49,4 @@ async def cmd_start(message: Message):
 async def cmd_start(message: Message):
     await message.answer(text='Очистка приложения от отмененных и выполненных задач...')
     await clean_garbage()
-    await message.answer(text='Удаление прошло успешно...')
+    await message.answer(text='Очистка прошла успешно...')

@@ -23,7 +23,6 @@ def get_time_period(category_name: str) -> datetime.timedelta | None:
         time_period = datetime.timedelta(days=365)
     else:
         time_period = None
-
     return time_period
 
 
