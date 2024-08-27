@@ -2,12 +2,10 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
 
 from config import settings
-from database.services import create_tables, add_initial_categories
 
+from database.services import create_tables, add_initial_categories
 
 from handlers.main_handlers import router as main_router
 from handlers.callback_handlers import router as callback_router
