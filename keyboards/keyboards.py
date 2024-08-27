@@ -21,8 +21,6 @@ async def category_keyboard(mode: str):
         if mode != 'add' or category.name != 'Все':
             builder.add(InlineKeyboardButton(text=category.name,
                                              callback_data=f'{mode}_{category.name}'))
-    if mode == 'add':
-        pass
     return builder.adjust(2).as_markup()
 
 

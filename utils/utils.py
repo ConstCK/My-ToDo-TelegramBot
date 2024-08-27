@@ -14,7 +14,7 @@ def validate_task(data: str) -> tuple[str, str] | None:
 # Получение даты истечения для задачи
 def get_time_period(category_name: str) -> datetime.timedelta | None:
     if category_name == 'Ежедневные':
-        time_period = datetime.timedelta(minutes=11)
+        time_period = datetime.timedelta(days=1)
     elif category_name == 'На неделю':
         time_period = datetime.timedelta(weeks=1)
     elif category_name == 'На месяц':

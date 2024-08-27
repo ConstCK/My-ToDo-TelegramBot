@@ -10,6 +10,7 @@ from database.crud import add_task, change_status
 from database.services import get_tasks_number
 
 from keyboards.keyboards import base_keyboard, tasks_keyboard
+
 from scheduler.handlers import task_reminder
 
 from scheduler.scheduler import scheduler
@@ -52,9 +53,9 @@ async def create_task(message: Message, state: FSMContext):
             scheduler.add_job(func=task_reminder,
                               kwargs=({
                                   'task_id': task.id,
-                                  'message': message
+                                  'chat_id': message.chat.id,
                               }),
-                              name='expired_tasks',
+                              name='expiring_tasks',
                               trigger='date',
                               run_date=task.expire_at - datetime.timedelta(minutes=10),
                               )

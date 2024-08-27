@@ -6,7 +6,7 @@ from config import settings
 # Создание движка для связи с БД
 engine = create_async_engine(url=settings.db_url,
                              future=True,
-                             echo=True)
+                             echo=False)
 
 # Создание асинхронной сессии
 async_session = async_sessionmaker(bind=engine,

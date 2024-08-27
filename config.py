@@ -1,5 +1,6 @@
 import os
 
+from aiogram import Bot, Dispatcher
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
@@ -16,3 +17,9 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Создание бота
+bot = Bot(token=settings.bot_token.get_secret_value())
+
+# Создание диспетчера для обработки событий
+dp = Dispatcher()
