@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import BigInteger, String, ForeignKey
+from sqlalchemy import BigInteger, String, ForeignKey, func, text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.config import Base
@@ -28,7 +28,7 @@ class Task(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(128))
     description: Mapped[str] = mapped_column(String(512), nullable=True)
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(nullable=True)
     expire_at: Mapped[datetime.datetime] = mapped_column(nullable=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.tg_id', ondelete='CASCADE'))
     status: Mapped[str] = mapped_column(String(16), default='Выполняется')

@@ -81,11 +81,13 @@ async def get_task(task_id: int) -> Task:
 async def add_task(user_id: int, category_name: str, name: str, description: str) -> Task:
     category_id = await get_category_id(category_name)
     time_period = get_time_period(category_name)
+    current_time = datetime.datetime.now()
     expire_date = datetime.datetime.now() + time_period if time_period else None
     task = Task(name=name,
                 description=description,
                 category_id=category_id,
                 user_id=user_id,
+                created_at=current_time,
                 expire_at=expire_date)
     async with async_session() as session:
         session.add(task)

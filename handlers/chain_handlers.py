@@ -44,7 +44,7 @@ async def create_task(message: Message, state: FSMContext):
         task = await add_task(category_name=data_storage['category_name'], user_id=message.from_user.id,
                               name=task_data[0], description=task_data[1])
 
-        await message.answer(text=f'Добавлена задача {task.name} в {task.created_at.strftime("%d-%m-%Y %H:%M")}',
+        await message.answer(text=f'Добавлена задача {task.name} {task.created_at.strftime("%d-%m-%Y в %H:%M")}',
                              reply_markup=await base_keyboard())
 
         # args= аргумент передаваемый в функцию-обработчик запланированной задачи func=
