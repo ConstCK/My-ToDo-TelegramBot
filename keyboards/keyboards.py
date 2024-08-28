@@ -19,8 +19,8 @@ async def category_keyboard(mode: str):
     categories = await get_all_categories()
     for category in categories:
         if mode != 'add' or category.name != 'Все':
-            builder.add(InlineKeyboardButton(text=category.name,
-                                             callback_data=f'{mode}_{category.name}'))
+            builder.add(InlineKeyboardButton(text=category.name, callback_data=f'{mode}_{category.name}'))
+
     return builder.adjust(2).as_markup()
 
 
@@ -31,4 +31,5 @@ async def tasks_keyboard(tg_id: int, category: str):
     for task in tasks:
         builder.add(InlineKeyboardButton(text=f'Задача: {task.name}. Описание: {task.description}.',
                                          callback_data=f'task_{task.id}'))
+
     return builder.adjust(1).as_markup()

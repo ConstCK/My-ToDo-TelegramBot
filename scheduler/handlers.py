@@ -10,6 +10,4 @@ async def task_reminder(chat_id: int, task_id: int):
     if result and result.status == 'Выполняется':
         await bot.send_message(chat_id=chat_id,
                                text=f'Срок выполнения задачи <b>"{result.name}"</b> истекает через 10 минут.\n'
-                                    f'Не забудьте завершить ее...',
-                               parse_mode=ParseMode.HTML
-                               )
+                                    f'Не забудьте завершить ее...', parse_mode=ParseMode.HTML)

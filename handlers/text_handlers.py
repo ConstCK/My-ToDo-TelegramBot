@@ -1,7 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import Message
 
-
 from keyboards.keyboards import category_keyboard
 from database.crud import clean_garbage, delete_canceled_tasks
 

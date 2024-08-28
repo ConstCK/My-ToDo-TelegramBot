@@ -22,6 +22,3 @@ async def cmd_start(message: Message, state: FSMContext):
 @router.message(Command('help'))
 async def cmd_start(message: Message):
     await message.answer(text='Используйте команду <b>/start</b> для запуска...', parse_mode=ParseMode.HTML)
-
-
-

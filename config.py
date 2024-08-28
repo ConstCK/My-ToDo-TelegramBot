@@ -12,8 +12,7 @@ class Settings(BaseSettings):
     bot_token: SecretStr = os.getenv('BOT_TOKEN')
     db_url: str = os.getenv('DATABASE_URL')
 
-    model_config = SettingsConfigDict(
-        env_file='.env', env_file_encoding='utf-8', extra='allow')
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='allow')
 
 
 settings = Settings()
@@ -23,3 +22,4 @@ bot = Bot(token=settings.bot_token.get_secret_value())
 
 # Создание диспетчера для обработки событий
 dp = Dispatcher()
+

@@ -4,15 +4,10 @@ from sqlalchemy.orm import DeclarativeBase
 from config import settings
 
 # Создание движка для связи с БД
-engine = create_async_engine(url=settings.db_url,
-                             future=True,
-                             echo=False)
+engine = create_async_engine(url=settings.db_url, future=True, echo=False)
 
 # Создание асинхронной сессии
-async_session = async_sessionmaker(bind=engine,
-                                   autoflush=False,
-                                   autocommit=False,
-                                   expire_on_commit=False)
+async_session = async_sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
 
 # Родительский класс для создания таблиц
