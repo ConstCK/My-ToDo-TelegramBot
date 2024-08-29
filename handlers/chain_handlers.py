@@ -55,6 +55,7 @@ async def create_task(message: Message, state: FSMContext):
             scheduler.print_jobs()
     else:
         await message.answer(text='Ошибка при вводе задачи', reply_markup=await base_keyboard())
+    await state.clear()
 
 
 # Обработка запроса на завершение задач
@@ -117,3 +118,4 @@ async def create_task(callback: CallbackQuery, state: FSMContext):
     else:
         await callback.message.answer(text=f'Не удалось {fail_text} задачу.\n'
                                            f'Попробуйте еще раз')
+    await state.clear()
